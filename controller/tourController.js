@@ -1,8 +1,9 @@
 import TourModel from '../model/tourModel.js';
 import APIFeatures from '../utils/apiFeatures.js';
+import AppError from '../utils/appError.js';
 
 const tourController = {
-    getAllTours: async (req, res) => {
+    getAllTours: async (req, res, next) => {
         try {
             const features = new APIFeatures(TourModel.find(), req.query)
                 .filter()
@@ -18,18 +19,17 @@ const tourController = {
                 }
             });
         } catch (error) {
-            res.status(400).json({
-                status: 'fail',
-                message: error
-            });
-
+            next(error);
         }
     },
 
-    getTour: async (req, res) => {
+    getTour: async (req, res, next) => {
         try {
             const id = req.params.id;
             const tour = await TourModel.findById(id);
+            if (!tour) {
+                return next(new AppError('No tour found with that ID', 404));
+            }
             res.status(200).json({
                 status: 'success',
                 data: {
@@ -37,14 +37,11 @@ const tourController = {
                 }
             });
         } catch (error) {
-            res.status(400).json({
-                status: 'fail',
-                message: error
-            });
+            next(error);
         }
     },
 
-    createTour: async (req, res) => {
+    createTour: async (req, res, next) => {
         try {
             const newTour = await TourModel.create(req.body);
             res.status(201).json({
@@ -54,51 +51,48 @@ const tourController = {
                 }
             });
         } catch (error) {
-            res.status(400).json({
-                status: 'fail',
-                message: error
-            });
+            next(error);
         }
     },
 
-    updateTour: async (req, res) => {
+    updateTour: async (req, res, next) => {
         try {
             const id = req.params.id;
-            const updatedTour = await TourModel.findByIdAndUpdate(id, req.body, {
+            const tour = await TourModel.findByIdAndUpdate(id, req.body, {
                 new: true,
                 runValidators: true
             });
+            if (!tour) {
+                return next(new AppError('No tour found with that ID', 404));
+            }
             res.status(200).json({
                 status: 'success',
                 data: {
-                    tour: updatedTour
+                    tour: tour
                 }
             })
         } catch (error) {
-            res.status(400).json({
-                status: 'fail',
-                message: error
-            });
+            next(error);
         }
     },
 
-    deleteTour: async (req, res) => {
+    deleteTour: async (req, res, next) => {
         try {
             const id = req.params.id;
-            await TourModel.findByIdAndDelete(id);
+            const tour = await TourModel.findByIdAndDelete(id);
+            if (!tour) {
+                return next(new AppError('No tour found with that ID', 404));
+            }
             res.status(204).json({
                 status: 'success',
                 data: null
             });
         } catch (error) {
-            res.status(400).json({
-                status: 'fail',
-                message: error
-            });
+            next(error);
         }
     },
 
-    getTourStats: async (req, res) => {
+    getTourStats: async (req, res, next) => {
         try {
             const stats = await TourModel.aggregate([
                 {
@@ -129,15 +123,11 @@ const tourController = {
                 }
             });
         } catch (error) {
-            res.status(400).json({
-                status: 'fail',
-                message: error
-            });
-
+            next(error);
         }
     },
 
-    getMonthlyPlan: async (req, res) => {
+    getMonthlyPlan: async (req, res, next) => {
         try {
             const year = req.params.year * 1;
             const plan = await TourModel.aggregate([
@@ -181,11 +171,7 @@ const tourController = {
                 }
             });
         } catch (error) {
-            res.status(400).json({
-                status: 'fail',
-                message: error
-            });
-
+            next(error);
         }
     }
 }
