@@ -1,37 +1,54 @@
+import UserModel from "../model/userModel.js";
+import AppError from "../utils/appError.js";
+import apiFeatures from "../utils/apiFeatures.js";
+
 const userController = {
-    getAllUsers: (req, res) => {
-        res.status(500).json({
-            status: 'error',
-            message: 'This route is not yet defined'
-        });
+    getAllUsers: async (req, res, next) => {
+        try {
+            const users = await UserModel.find();
+            res.status(200).json({
+                status: 'success',
+                results: users.length,
+                data: {
+                    users
+                }
+            });
+        } catch (error) {
+            next(error);
+        }
     },
 
-    createUser: (req, res) => {
-        res.status(500).json({
-            status: 'error',
-            message: 'This route is not yet defined'
-        });
+    createUser: (req, res, next) => {
+        try {
+
+        } catch (error) {
+            next(error);
+        }
     },
 
-    getUser: (req, res) => {
-        res.status(500).json({
-            status: 'error',
-            message: 'This route is not yet defined'
-        });
+    getUser: (req, res, next) => {
+        try {
+
+        } catch (error) {
+            next(error);
+        }
     },
 
-    updateUser: (req, res) => {
-        res.status(500).json({
-            status: 'error',
-            message: 'This route is not yet defined'
-        });
+
+    updateUser: (req, res, next) => {
+        try {
+
+        } catch (error) {
+            next(error);
+        }
     },
 
-    deleteUser: (req, res) => {
-        res.status(500).json({
-            status: 'error',
-            message: 'This route is not yet defined'
-        });
+    deleteUser: (req, res, next) => {
+        try {
+
+        } catch (error) {
+            next(error);
+        }
     }
 
 }

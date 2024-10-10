@@ -1,5 +1,6 @@
 import { Router } from "express";
 import tourController from "../controller/tourController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const tourRouter = Router();
 
@@ -13,7 +14,7 @@ tourRouter
 
 tourRouter
     .route('/')
-    .get(tourController.getAllTours)
+    .get(authMiddleware, tourController.getAllTours)
     .post(tourController.createTour);
 
 tourRouter
