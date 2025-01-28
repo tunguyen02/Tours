@@ -23,8 +23,8 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/users', userRouter);
+app.use('/api/tours', tourRouter);
+app.use('/api/users', userRouter);
 
 
 app.all('*', (req, res, next) => {
