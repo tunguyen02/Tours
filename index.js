@@ -6,12 +6,39 @@ import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import AppError from './utils/appError.js';
 import errorHandler from './controller/errController.js';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import hpp from 'hpp';
 
 dotenv.config();
 const app = express();
+app.use(helmet());
 
+const limiter = rateLimit({
+    max: 100,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many requests from this IP, please try again in an hour!'
+});
+
+app.use('/api', limiter);
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(mongoSanitize());
+app.use(xss());
+app.use(hpp(
+    {
+        whitelist: [
+            'duration',
+            'ratingsQuantity',
+            'ratingsAverage',
+            'maxGroupSize',
+            'difficulty',
+            'price'
+        ]
+    }
+));
 
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
 mongoose.connect(DB)

@@ -12,6 +12,10 @@ userRouter.post('/forgotPassword', authController.forgotPassword);
 userRouter.patch('/resetPassword/:token', authController.resetPassword);
 userRouter.patch('/updateMyPassword', authMiddleware.protect, authController.updatePassword);
 
+userRouter.patch('/updateMe', authMiddleware.protect, userController.updateMe);
+userRouter.delete('/deleteMe', authMiddleware.protect, userController.deleteMe);
+
+
 userRouter.route('/')
     .get(userController.getAllUsers)
     .post(userController.createUser);
