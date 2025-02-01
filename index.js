@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
+import reviewRouter from './routes/reviewRouters.js';
 import AppError from './utils/appError.js';
 import errorHandler from './controller/errController.js';
 import rateLimit from 'express-rate-limit';
@@ -52,6 +53,7 @@ app.use((req, res, next) => {
 
 app.use('/api/tours', tourRouter);
 app.use('/api/users', userRouter);
+app.use('/api/reviews', reviewRouter);
 
 
 app.all('*', (req, res, next) => {

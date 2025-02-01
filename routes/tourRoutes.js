@@ -1,7 +1,11 @@
 import { Router } from "express";
 import tourController from "../controller/tourController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import reviewRouter from "../routes/reviewRouters.js";
+
 const tourRouter = Router();
+
+tourRouter.use('/:tourId/reviews', reviewRouter);
 
 tourRouter
     .route('/tour-stats')
@@ -14,16 +18,23 @@ tourRouter
 tourRouter
     .route('/')
     .get(tourController.getAllTours)
-    .post(tourController.createTour);
+    .post(
+        authMiddleware.protect,
+        authMiddleware.restrictTo('admin', 'lead-guide'),
+        tourController.createTour);
 
 tourRouter
     .route('/:id')
     .get(tourController.getTour)
-    .patch(tourController.updateTour)
+    .patch(
+        authMiddleware.protect,
+        authMiddleware.restrictTo('admin'),
+        tourController.updateTour)
     .delete(
-        authMiddleware.protect, 
-        authMiddleware.restrictTo('admin'), 
+        authMiddleware.protect,
+        authMiddleware.restrictTo('admin'),
         tourController.deleteTour
     );
+
 
 export default tourRouter;

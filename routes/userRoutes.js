@@ -18,11 +18,17 @@ userRouter.delete('/deleteMe', authMiddleware.protect, userController.deleteMe);
 
 userRouter.route('/')
     .get(userController.getAllUsers)
-    .post(userController.createUser);
 
 userRouter.route('/:id')
     .get(userController.getUser)
-    .patch(userController.updateUser)
-    .delete(userController.deleteUser);
+    .patch(
+        authMiddleware.protect,
+        userController.updateUser
+    )
+    .delete(
+        authMiddleware.protect,
+        authMiddleware.restrictTo('admin'),
+        userController.deleteUser
+    );
 
 export default userRouter;
