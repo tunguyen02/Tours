@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import TourModel from '../../model/tourModel.js';
+import UserModel from '../../model/userModel.js';
+import ReviewModel from '../../model/reviewModel.js';
 
 // Định nghĩa __dirname thủ công
 const __filename = fileURLToPath(import.meta.url);
@@ -17,11 +19,16 @@ mongoose.connect(DB)
 
 // Đọc file JSON
 const tours = JSON.parse(fs.readFileSync(path.join(__dirname, 'tours.json'), 'utf-8'));
+const users = JSON.parse(fs.readFileSync(path.join(__dirname, 'users.json'), 'utf-8'));
+const reviews = JSON.parse(fs.readFileSync(path.join(__dirname, 'reviews.json'), 'utf-8'));
+
 
 // Import data vào DB
 const importData = async () => {
     try {
         await TourModel.create(tours);
+        await UserModel.create(users, { validateBeforeSave: false });
+        await ReviewModel.create(reviews);
         console.log('Data successfully loaded!');
     } catch (error) {
         console.log(error);
@@ -33,6 +40,8 @@ const importData = async () => {
 const deleteData = async () => {
     try {
         await TourModel.deleteMany();
+        await UserModel.deleteMany();
+        await ReviewModel.deleteMany();
         console.log('Data successfully deleted!');
     } catch (error) {
         console.log(error);

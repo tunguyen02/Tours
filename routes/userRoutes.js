@@ -7,28 +7,23 @@ const userRouter = Router();
 
 userRouter.post('/signup', authController.signup);
 userRouter.post('/login', authController.login);
-
 userRouter.post('/forgotPassword', authController.forgotPassword);
 userRouter.patch('/resetPassword/:token', authController.resetPassword);
-userRouter.patch('/updateMyPassword', authMiddleware.protect, authController.updatePassword);
 
-userRouter.patch('/updateMe', authMiddleware.protect, userController.updateMe);
-userRouter.delete('/deleteMe', authMiddleware.protect, userController.deleteMe);
+userRouter.use(authMiddleware.protect);
+
+userRouter.patch('/updateMyPassword', authController.updatePassword);
+userRouter.get('/me', userController.getMe, userController.getUser);
+userRouter.patch('/updateMe', userController.updateMe);
+userRouter.delete('/deleteMe', userController.deleteMe);
 
 
 userRouter.route('/')
-    .get(userController.getAllUsers)
+    .get(authMiddleware.restrictTo('admin'), userController.getAllUsers)
 
 userRouter.route('/:id')
     .get(userController.getUser)
-    .patch(
-        authMiddleware.protect,
-        userController.updateUser
-    )
-    .delete(
-        authMiddleware.protect,
-        authMiddleware.restrictTo('admin'),
-        userController.deleteUser
-    );
+    .patch(userController.updateUser)
+    .delete(authMiddleware.restrictTo('admin'), userController.deleteUser);
 
 export default userRouter;

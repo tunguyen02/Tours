@@ -4,10 +4,11 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const reviewRouter = Router({ mergeParams: true });
 
+reviewRouter.use(authMiddleware.protect);
+
 reviewRouter.route('/')
     .get(reviewController.getAllReviews)
     .post(
-        authMiddleware.protect,
         authMiddleware.restrictTo('user'),
         reviewController.setTourUserIds,
         reviewController.createReview
@@ -15,15 +16,7 @@ reviewRouter.route('/')
 
 reviewRouter.route('/:id')
     .get(reviewController.getReview)
-    .delete(
-        authMiddleware.protect,
-        authMiddleware.restrictTo('admin'),
-        reviewController.deleteReview
-    )
-    .patch(
-        authMiddleware.protect,
-        authMiddleware.restrictTo('admin'),
-        reviewController.updateReview
-    );
+    .delete(authMiddleware.restrictTo('user', 'admin'), reviewController.deleteReview)
+    .patch(authMiddleware.restrictTo('user', 'admin'), reviewController.updateReview);
 
 export default reviewRouter;

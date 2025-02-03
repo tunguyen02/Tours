@@ -10,6 +10,11 @@ const filterObj = (obj, ...allowedFields) => {
 }
 
 const userController = {
+    getMe: (req, res, next) => {
+        req.params.id = req.user.id;
+        next();
+    },
+
     updateMe: async (req, res) => {
         try {
             if (req.body.password || req.body.passwordConfirm) {

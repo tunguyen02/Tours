@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
-import validator from "validator";
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -10,7 +9,6 @@ const tourSchema = new mongoose.Schema({
         trim: true,
         maxlength: [40, 'A tour name must have less or equal than 40 characters'],
         minlength: [10, 'A tour name must have more or equal than 10 characters'],
-        // validate: [validator.isAlpha, 'Tour name must only contain characters']
     },
     slug: String,
     duration: {
@@ -33,7 +31,8 @@ const tourSchema = new mongoose.Schema({
         type: Number,
         default: 4.5,
         min: [1, 'Rating must be above 1.0'],
-        max: [5, 'Rating must be below 5.0']
+        max: [5, 'Rating must be below 5.0'],
+        set: val => Math.round(val * 10) / 10
     },
     ratingsQuantity: {
         type: Number,
@@ -113,6 +112,11 @@ const tourSchema = new mongoose.Schema({
     }
 );
 
+
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
+
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
 });
@@ -144,6 +148,8 @@ tourSchema.pre('aggregate', function (next) {
     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
     next();
 });
+
+
 
 const TourModel = mongoose.model('Tour', tourSchema);
 export default TourModel;

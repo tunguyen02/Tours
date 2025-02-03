@@ -13,7 +13,17 @@ tourRouter
 
 tourRouter
     .route('/monthly-plan/:year')
-    .get(tourController.getMonthlyPlan);
+    .get(
+        authMiddleware.protect,
+        authMiddleware.restrictTo('admin', 'lead-guide', 'guide'),
+        tourController.getMonthlyPlan
+    );
+
+tourRouter.route('/tours-within/:distance/center/:latlng/unit/:unit')
+    .get(tourController.getToursWithin);
+
+tourRouter.route('/distances/:latlng/unit/:unit')
+    .get(tourController.getDistances);
 
 tourRouter
     .route('/')
@@ -28,11 +38,11 @@ tourRouter
     .get(tourController.getTour)
     .patch(
         authMiddleware.protect,
-        authMiddleware.restrictTo('admin'),
+        authMiddleware.restrictTo('admin', 'lead-guide'),
         tourController.updateTour)
     .delete(
         authMiddleware.protect,
-        authMiddleware.restrictTo('admin'),
+        authMiddleware.restrictTo('admin', 'lead-guide'),
         tourController.deleteTour
     );
 
